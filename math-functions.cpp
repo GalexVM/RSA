@@ -79,16 +79,7 @@ ZZ resto_menor(ZZ a, ZZ b){
     return c;
 }
 //
-ZZ euclidesNTL(ZZ r1, ZZ r2){
-	ZZ q,r;
-	while(r2>0){
-		q = r1/r2;
-		r = r1 - (q*r2);
-		r1 = r2;
-		r2 = r;
-	}
-	return r1;
-}
+
 ZZ d(0),k(0),l(0);
 vector <ZZ>  euclides_ext(ZZ a, ZZ b){
 
@@ -265,3 +256,118 @@ int hallarDigitos(ZZ n){
     }
     return counter;
 }
+
+ZZ resto_chino(vector<expon_euler> a, vector<ZZ> p){
+	vector<ZZ> vect;
+	cout<<"solucion: "<<solucion(p)<<endl;
+    if (solucion(p)==1 ){
+        cout<<"solucion funciona\n";
+    	ZZ Pn=ZZ(1), x0=ZZ(0);
+    	vector<ZZ> P,q;
+    	for (int j=0; j<p.size();j++){  Pn *= p[j];  }
+    	cout<<"primer for terminado\n";
+
+    	for (int j=0; j<p.size();j++){
+    	//llenamos P con Pi
+    	    P.push_back(Pn/p[j]);
+                cout<<"p lleno\n";
+		//llenamos qi
+		    q.push_back(ecuacion_mod_k0 ( P[j],ZZ(0),ZZ(1),p[j] ) );
+                cout<<"q lleno\n";
+            cout<<"la funcion ecuacion_... entra en q\n";
+            cout<<"exp: "<<Binary_Exponentiation( a[j].base , a[j].ex, Pn)<<endl;
+		    x0 +=  (mod(Binary_Exponentiation( a[j].base , a[j].ex, Pn)*P[j]*q[j] , Pn));
+		    cout<<"x0 recibio los valores\n";
+		    if (x0>=Pn) x0=mod(x0,Pn);
+		}
+		cout<<"segundo for terminado\n";
+
+	    return x0;
+	}
+}
+
+vector <expon> prop3(ZZ n ){
+    vector <expon> divisor;
+    ZZ copy_n=n;
+    for (ZZ i(2); i<copy_n; i++){
+        if (   MillerRabinTest(i)==1  ){
+            ZZ aux= mod(n,i);
+            if (aux ==(0)) {
+                expon E1(i);
+                while (  aux ==(0)  ){
+                    E1.sum();
+                    n= n/i;
+                    aux= mod(n,i);
+                }
+                divisor.push_back(E1);
+            }
+        }
+        if  (n==ZZ(1)) break;
+    }
+    return divisor;
+}
+
+ZZ prop4(expon n){ //p*(e) -  p*(e-1)
+    return ( power(n.base, n.ex ) - power(n.base , n.ex-1 ));
+}
+
+ZZ fi_euler(ZZ n){
+    if (n==ZZ(1)) return ZZ(0);
+    else if ( MillerRabinTest(n)==1 ) return ZZ(n-1);
+    else{//buscamos sus multiplos primos
+        vector <expon> aux= prop3(n);
+        ZZ count (0), rpta(1);
+        //comprobar si los multiplos son unicos o estan elevados a algun num
+        for (int i=0; i< aux.size(); i++) if (aux[i].ex == 1 ) count++;
+        //todos son multiplos unicos. llamamos prop 2 o 1
+        if (count == aux.size()){
+            for (int i=0; i< aux.size(); i++)rpta*=fi_euler(aux[i].base);
+        }
+        //multiplos repetidos osea a**n. llamamos pop 4.
+        else{
+            for (int i=0; i< aux.size(); i++) rpta*= prop4(aux[i]);
+        }
+        return rpta;
+    }
+}
+
+ZZ exponenciacion_euler(ZZ base, ZZ ex, ZZ m ){
+    ZZ phi= fi_euler(m);
+    if (phi==ex) return ZZ(1);
+    else return Binary_Exponentiation(base,ex-phi,m);
+}
+
+ZZ inversa_euler(ZZ base, ZZ m){
+    return Binary_Exponentiation(base,fi_euler(m)-1, m);
+}
+
+// (= es congruente) en la forma: ax + b = c (mod n)
+ZZ ecuacion_mod_k0(ZZ a, ZZ b, ZZ c, ZZ n){
+    if (resto_menor(a,n)==ZZ(1)){
+        c= mod(c-b,n);
+        c= mod(c*inversa_euler(a,n),n);
+        return c ;
+	}
+}
+
+bool solucion( vector<ZZ> p){
+    for (int i=0; i< p.size()-1; i++){
+
+        if (resto_menor( p[i],p[i+1])!= ZZ(1)) return 0;
+    }
+    return 1;
+}
+
+ZZ TRC(ZZ base, ZZ exponente, ZZ p, ZZ q){
+    ZZ P (p*q);
+    ZZ P1 (q);
+    ZZ P2 (p);
+    ZZ q1 (inversa_modularNTL(P1,p));
+    ZZ q2 (inversa_modularNTL(P2,q));
+    ZZ exponente1 ( mod(exponente,p-1) );
+    ZZ exponente2 ( mod(exponente,q-1) );
+    ZZ X ( mod( ( Binary_Exponentiation( base, exponente1, p )*P1*q1 ) + ( Binary_Exponentiation( base, exponente2, q )*P2*q2 ), P ) );
+    X = mod(X,P);
+    return X;
+}
+

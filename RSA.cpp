@@ -25,6 +25,9 @@ RSA::RSA(int bits){
     cout<<". ";
     cout<<endl<<p<<endl;
     q = generarPrimoNTL(bits);
+    while(q == p){
+        //cout<<"pam\n";
+        q = generarPrimoNTL(bits);}
     cout<<". ";
     cout<<endl<<q<<endl;
     N = p*q;
@@ -155,12 +158,30 @@ string RSA::descifrar(string &msg){
         if((i+1)%hallarDigitos(N) == 0)key++;
     }
 
+
+
     for(int i = 0; i< vectorBloques.size(); i++){//Convertir a ZZ
         istringstream valores(vectorBloques[i]);
         ZZ valorConvertido;
         valores>>valorConvertido;
+        //resto chino
+        /*ZZ t1= mod(valorConvertido,p-1), t2= mod(valorConvertido,q-1);
+        expon_euler a1(valorConvertido,t1);
+        expon_euler a2(valorConvertido,t2);
 
-        ZZ valorDescifrado ( mod(Binary_Exponentiation(valorConvertido,d,N),N) );//Exponenciacion modular
+        vector<ZZ> p_v{p,q};
+        cout<<"primer vector check\n";
+        vector<expon_euler> a{a1,a2};
+        cout<<"segundo vector check\n";
+
+        cout<<"valor: "<<valorConvertido<<endl;
+        ZZ valorDescifrado ( resto_chino(a,p_v) );
+        cout<<"nuevo valor: "<<valorDescifrado<<endl;*/
+
+        //ZZ valorDescifrado ( mod(Binary_Exponentiation(valorConvertido,d,N),N) );//Exponenciacion modular
+        cout<<"valor: "<<valorConvertido<<endl;
+        ZZ valorDescifrado ( TRC(valorConvertido, d, p, q) );
+        cout<<"nuevo valor: "<<valorDescifrado<<endl;
 
         ostringstream valoresNuevos;
          for(int j= 0; j < (hallarDigitos(N)-1-hallarDigitos(valorDescifrado)); j++)//Regresar a string añaidendo 0s a la izq
