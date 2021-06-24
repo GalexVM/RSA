@@ -52,4 +52,31 @@ ZZ pot(ZZ base, ZZ exponente);
 vector<ZZ>fact_2(ZZ n);//Sacar factores 2
 ZZ middleSquareNumberRan(ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor);//Aleatorio en rango
 int hallarDigitos(ZZ n);
+//criba
+ZZ criba_eratostenes(int bits,int limite);
+class nodo{
+public:
+    ZZ key, val ;
+    nodo *next ;
+    nodo (ZZ k, ZZ v, nodo *n=nullptr ) : key (k), val(v), next (n) {}
 
+    bool find_key (nodo* head, ZZ k, nodo *& pos){
+        pos = nullptr;
+        nodo *t= head->next;
+        for ( ; t and t->key < k ;pos= t, t= t->next );
+        if(t and t->key == k)  return 1;
+        else return 0;
+    }
+
+    void add(nodo* head,ZZ v){
+        nodo *pos = nullptr;
+        nodo *t= head->next;
+        for ( ; t ; pos= t, t= t->next );
+        pos->next = new nodo( (pos->key)+1, v);
+    }
+
+    ~nodo(){
+        cout << "delete"<<endl;
+    }
+
+};

@@ -17,8 +17,8 @@ using std::chrono::system_clock;
 #include <sstream>
 using std::ostringstream;
 using std::istringstream;
-
-
+#include <bitset>
+#include <time.h>
 
 //NTL
 
@@ -115,6 +115,7 @@ ZZ middleSquareNumber(ZZ number, ZZ bits) {
      ZZ limite = pot(ZZ(10),t);
       sqn =  next_number / limite;
       next_number = sqn * sqn * sqn;
+      //cout<<"next_number: "<<next_number<<endl;
 
    }
    next_number = mod(next_number, intervalo_mayor);
@@ -131,8 +132,12 @@ ZZ newTime()
     x = ZZ(millisec_since_epoch);
 
     x = string_a_int(int_a_string(x).substr(6,9));
-
+    if(x == 0 || x==10 || x == 100 || x == 1000)
+    {
+        x=newTime();
+    }
     x = pot(x+5,ZZ(3));
+
     return x;
 }
 
@@ -226,9 +231,34 @@ ZZ middleSquareNumberRan(ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor) {
 }
 //
 ZZ generarPrimoNTL(int bits){
+    auto begin = std::chrono::high_resolution_clock::now();
     ZZ numero (middleSquareNumber(newTime(),ZZ(bits)));
+    if(bits <= 16)
+    {
+        srand(time(nullptr));
+        int random;
+        if(bits == 4)
+        {
+            random = rand() % 2 + 1;
+            numero=criba_eratostenes(bits,random);
+        }
+        else{
+            random = rand() % bits*2;
+            numero=criba_eratostenes(bits,random);
+        }
+    }
     while (mod(numero,ZZ(2))==0 || MillerRabinTest(numero) == false){
         numero = middleSquareNumber(newTime(),ZZ(bits));
+        auto end = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+        int seg = elapsed.count() * 1e-9;
+        cout<<"seg: "<<seg<<endl;
+        if(seg>30)
+        {
+            cout<<"spara "<<seg<<endl;
+            numero = criba_eratostenes(bits,1);
+            break;
+        }
     }
     return numero;
 }
@@ -245,8 +275,47 @@ ZZ generarCoprimoNTL(ZZ n, int bits){
     }
     return coprimo;
 }
+//Criba
 
 
+ZZ criba_eratostenes(int bits,int limite)
+{
+
+    ZZ pot=NTL::power2_ZZ(bits);
+    ZZ max= pot-1;
+
+    nodo *h= new nodo (ZZ(0), ZZ(0));
+    nodo *t= h;
+
+    if(limite != 0)
+    {
+        int contador = 0;
+        for ( ZZ min=pot/2 ;contador< limite; min++){
+            if ( MillerRabinTest(conv<ZZ>(min),ZZ(10))){
+                contador++;
+                t->next = new nodo( (t->key)+1, min);
+                t= t->next;
+
+            }
+        }
+        ZZ valor = t->val;
+        return valor;
+    }
+    else
+    {
+        for ( ZZ min=pot/2 ;min<= max; min++){
+            if ( MillerRabinTest(conv<ZZ>(min),ZZ(10))){
+                t->next = new nodo( (t->key)+1, min);
+                t= t->next;
+            }
+        }
+        ZZ valor = t->val;
+        return valor;
+    }
+
+
+}
+/////
 int hallarDigitos(ZZ n){
     if(n == 0) return 1;
     int counter = 0;

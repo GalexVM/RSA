@@ -13,7 +13,7 @@
 
 
 int main(){
-    RSA receptor(128);
+    RSA receptor(16);
     RSA emisor;
     bool finSesion = false;
     cout<<"Algoritmo RSA"<<endl;
@@ -52,6 +52,4 @@ int main(){
 
     return 0;
 }
-/*
 
-*/

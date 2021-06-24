@@ -21,6 +21,7 @@
 RSA::RSA(){}
 RSA::RSA(int bits){
     cout<<"Generando claves\n";
+
     p = generarPrimoNTL(bits);
     cout<<". ";
     cout<<endl<<p<<endl;
