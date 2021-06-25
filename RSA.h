@@ -4,7 +4,6 @@
 #include <NTL/ZZ.h>
     using NTL::ZZ;
 
-
 class RSA {
 private:
     ZZ d;
@@ -17,10 +16,9 @@ public:
     string nombre = "Gabriel Valdivia Medina";
     string correo = "gabriel.valdivia.medina@ucsp.edu.pe";
     RSA ();
-    RSA(int bits);
-    string cifrar(string &msg);
-    string descifrar(string &msg);
-
+    RSA( int bits );
+    string cifrar( string &msg );
+    string descifrar( string &msg );
 };
 
 

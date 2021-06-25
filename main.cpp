@@ -10,46 +10,42 @@
     using NTL::conv;
 #include "RSA.h"
 
-
-
 int main(){
-    RSA receptor(16);
+    RSA receptor( 256 );
     RSA emisor;
     bool finSesion = false;
-    cout<<"Algoritmo RSA"<<endl;
-    cout<<"Sus claves se han generado en el directorio local\n";
+    cout << "Algoritmo RSA" << endl;
+    cout << "Sus claves se han generado en el directorio local\n";
 
-    while(finSesion == false){
+    while( finSesion == false ) {
         string msg;
         string msgDescifrado;
-        cout<<"Para cifrar un mensaje, presione c\n";
-        cout<<"Para descifrar un mensaje, presione d\n";
-        cout<<"Para cerrar sesion, presione s\n";
+        cout << "Para cifrar un mensaje, presione c\n";
+        cout << "Para descifrar un mensaje, presione d\n";
+        cout << "Para cerrar sesion, presione s\n";
         char key;
-        cout<<" : ";
-        cin>>key;
+        cout << " : ";
+        cin >> key;
         cin.ignore();
 
-        switch(key){
+        switch( key ){
         case 'c':
-                cout<<"Ingrese el mensaje a cifrar: ";
-                getline(cin,msg);
-                cout<<emisor.cifrar(msg)<<endl;
+                cout << "Ingrese el mensaje a cifrar: ";
+                getline( cin, msg );
+                cout << emisor.cifrar( msg ) << endl;
             break;
         case 'd':
-                cout<<"Ingrese el mensaje cifrado: ";
-                getline(cin,msgDescifrado);
-                cout<<receptor.descifrar(msgDescifrado)<<endl;
+                cout << "Ingrese el mensaje cifrado: ";
+                getline( cin, msgDescifrado );
+                cout << receptor.descifrar( msgDescifrado ) << endl;
             break;
         case 's':
             finSesion = true;
             break;
         default:
-            cout<<"Opcion no valida\n";
+            cout << "Opcion no valida\n";
         }
-
     }
-
     return 0;
 }
 
