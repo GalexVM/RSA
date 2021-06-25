@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1624595674 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\main.cpp
+1624595946 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\main.cpp
 	<iostream>
 	<string>
 	<NTL/ZZ.h>

@@ -18,7 +18,7 @@
     using std::ostringstream;
     using std::istringstream;
 #include <bitset>
-#include <time.h>
+
 
 //Principales----------------------------------------------------------------------------------------------------------------------------------
 
@@ -131,14 +131,13 @@ ZZ generarPrimoNTL( int bits ) {
     auto begin = std::chrono::high_resolution_clock::now();
     ZZ numero ( middleSquareNumber( newTime(), ZZ( bits ) ) );
     if( bits <= 16 ){
-        srand( time( nullptr ) );
         ZZ random;
         if( bits == 4 ) {
-            random = middleSquareNumberRan(newTime(),ZZ(2),ZZ(1));
+            random = middleSquareNumberRan(newTime(),ZZ(2),ZZ(0));
             numero = criba_eratostenes( bits, random );
         }
         else {
-            random = middleSquareNumberRan(newTime(),ZZ(2),ZZ(1));
+            random = middleSquareNumberRan(newTime(),ZZ(bits*2),ZZ(1));
             numero = criba_eratostenes( bits, random );
         }
     }
@@ -148,7 +147,7 @@ ZZ generarPrimoNTL( int bits ) {
         auto elapsed = std::chrono::duration_cast <std::chrono::nanoseconds> ( end - begin );
         int seg = elapsed.count()*1e-9;
         //cout<<seg<<endl;
-        if( seg > 30 && bits >= 2048) {
+        if( seg > 99 && bits >= 2048) {
             cout << "\nTiempo de espera agotado, generando números con método alternativo... \n" << seg << endl;
             numero = criba_eratostenes( bits, ZZ( 1 ) );
             break;
