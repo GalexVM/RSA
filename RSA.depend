@@ -9,7 +9,7 @@
 	<string>
 	<NTL/ZZ.h>
 
-1624594596 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
+1624595839 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
 	<iostream>
 	<NTL/ZZ.h>
 	<ctime>
@@ -25,7 +25,7 @@
 	<NTL/ZZ.h>
 	<string>
 
-1624595622 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
+1624595839 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
 	<iostream>
 	<fstream>
 	<string>

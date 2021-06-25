@@ -11,7 +11,7 @@
 #include "RSA.h"
 
 int main(){
-    RSA receptor( 256 );
+    RSA receptor( 2048 );
     RSA emisor;
     bool finSesion = false;
     cout << "Algoritmo RSA" << endl;
