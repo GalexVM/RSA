@@ -298,3 +298,62 @@ int hallarDigitos( ZZ n ) {
     }
     return counter;
 }
+vector< string > separarBloques( string &msg, string &alfabeto, ZZ N ){
+    unsigned int tamBloques = hallarDigitos( N ) - 1;
+    int numCifras = hallarDigitos( ZZ( alfabeto.size() - 1 ) );
+    string msg2;
+
+
+    //Hallar números en el alfabeto.
+    for( unsigned int i = 0; i < msg.size(); i++ ) {
+        for( unsigned int j = 0; j < alfabeto.size(); j++ ) {
+            if ( alfabeto[ j ] == msg[ i ] ) {
+                if( hallarDigitos( ZZ( j ) ) < numCifras ) {
+                    int diferenciaDigitos = numCifras - hallarDigitos( ZZ( j ) );
+
+                    ostringstream digito;
+                    for( int x = 0; x < diferenciaDigitos; x++ )
+                        digito << "0";//Agregar 0 a la izq para completar.
+                    digito << j;
+                    msg2 += digito.str();
+
+                } else {
+                    msg2 += ZZ_a_string( ZZ( j ) );
+                }
+            }
+        }
+    }
+    //Dividir en bloques
+    vector< string > vectorBloques;
+    int numBloques;
+    if( mod( ZZ( msg2.size() ),ZZ( tamBloques ) ) == 0 ) {
+        numBloques = msg2.size() / tamBloques;
+    } else {
+        numBloques = ( msg2.size() / tamBloques ) + 1;
+    }
+    for( int i = 0; i < numBloques; i++ )//Crea espacios vacíos.
+        vectorBloques.push_back("");
+
+    int key = 0;
+    for( unsigned int i = 0; i < msg2.size(); i++ ){//Rellenar los espacios
+        vectorBloques[ key ].push_back( msg2[ i ] );
+        if( mod( ZZ( i + 1 ),ZZ( tamBloques ) ) == 0) key++;
+    }
+    if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
+        if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
+            while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
+                vectorBloques.back() += "26";
+            }
+        } else {
+            while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
+                vectorBloques.back() += "26";
+            }
+            vectorBloques.back().push_back( '2' );
+            vectorBloques.push_back( "6" );
+            while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
+                vectorBloques.back() += "26";
+            }
+        }
+    }
+    return vectorBloques;
+}

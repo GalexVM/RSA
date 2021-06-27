@@ -27,6 +27,7 @@ ZZ middleSquareNumberRan( ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor );//
 int hallarDigitos( ZZ n );
 ZZ min_( ZZ a, ZZ b );
 ZZ rem( ZZ c, ZZ d );
+vector< string > separarBloques( string &msg, string &alfabeto, ZZ N );
 
 //Criba
 ZZ criba_eratostenes( int bits, ZZ limite );
