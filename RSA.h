@@ -21,7 +21,7 @@ public:
     RSA( int bits, int a );
     RSA( int bits );
     string descifrar( string &msg );
-    vector < string > cifrar( string &msg );
+    string cifrar( string &msg );
 };
 
 

@@ -56,7 +56,7 @@ RSA::RSA( int bits, int a ) {
     out.close();
 }
 
-vector < string > RSA::cifrar( string &msg ) {
+ string  RSA::cifrar( string &msg ) {
     ZZ ePublico;
     ZZ NPublico;
     cout << "Ingrese la clave pública e: ";
@@ -126,7 +126,9 @@ vector < string > RSA::cifrar( string &msg ) {
         out << msgCifrado << endl << firmaFinal << endl;
     out.close();
 
-    vector < string > resultado = { msgCifrado, firmaFinal };
+    string resultado;
+    resultado = msgCifrado + " " + firmaFinal;
+    //vector < string > resultado = { msgCifrado, firmaFinal };
     return resultado;
 }
 
