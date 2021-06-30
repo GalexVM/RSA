@@ -357,3 +357,17 @@ vector< string > separarBloques( string &msg, string &alfabeto, ZZ N ){
     }
     return vectorBloques;
 }
+
+vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques ){
+        vector< string > vectorBloques;
+        for( int i = 0; i < numBloques; i++ ) {//Crear espacios para bloques N cifras.
+            vectorBloques.push_back("");
+        }
+        int key = 0;
+        for( int i = 0; i < msg.size(); i++ ) {//Rellenar los bloques
+            vectorBloques[ key ].push_back( msg[ i ] );
+            if( mod( ZZ( i + 1 ), ZZ( tamBloques ) ) == 0 ) key++;
+        }
+
+        return vectorBloques;
+    }

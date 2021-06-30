@@ -31,6 +31,12 @@ RSA::RSA( int bits ){
     e = generarCoprimoNTL( oN, bits );
     cout<<".\n";
     d = mod( inversa_modularNTL( e, oN ),oN );
+
+    ostringstream salida;
+    salida <<e<<"\t"<<N<<"\t"<<endl;//Crear cadena con datos.
+    ofstream out("claves_emisor.txt");//Imprimir en txt
+        out<<salida.str()<<endl;
+    out.close();
 }
 RSA::RSA( int bits, int a ) {
     cout << "Generando claves\n";
@@ -50,8 +56,8 @@ RSA::RSA( int bits, int a ) {
     d = mod( inversa_modularNTL( e, oN ),oN );
 
     ostringstream salida;
-    salida <<nombre<<"\t"<<e<<"\t"<<N<<"\t"<<correo<<endl;//Crear cadena con datos.
-    ofstream out("directorio_publico.txt");//Imprimir en txt
+    salida <<e<<"\t"<<N<<"\t"<<endl;//Crear cadena con datos.
+    ofstream out("claves_receptor.txt");//Imprimir en txt
         out<<salida.str()<<endl;
     out.close();
 }
@@ -59,9 +65,9 @@ RSA::RSA( int bits, int a ) {
  string  RSA::cifrar( string &msg ) {
     ZZ ePublico;
     ZZ NPublico;
-    cout << "Ingrese la clave pública e: ";
+    cout << "Ingrese la clave pública e de su destino: ";
     cin >> ePublico;
-    cout << "\nIngrese N público: ";
+    cout << "\nIngrese la clave pública N de su destino: ";
     cin >> NPublico;
     cout << endl;
 
@@ -133,17 +139,34 @@ RSA::RSA( int bits, int a ) {
 }
 
 string RSA::descifrar( string &msg ) {
-    vector< string > vectorBloques;//Crear un vector para hacer más rápida la exponenciación modular.
-    for( int i = 0; i < msg.size() / hallarDigitos( N ); i++ ) {//Crea espacios vacíos.
-        vectorBloques.push_back("");
-    }
-    int key = 0;
-    for( int i = 0; i < msg.size(); i++ ) {//Rellenar los espacios
-        vectorBloques[ key ].push_back( msg[ i ] );
-        if( mod( ZZ( i + 1 ), ZZ( hallarDigitos( N ) ) ) == 0 ) key++;
+    string firm;
+    string msg0;
+    bool cambioClave = false;
+    for( unsigned int i = 0; i < msg.size(); i++ ){
+        if( cambioClave == true ){
+            firm.push_back( msg[ i ] );
+        }else{
+            msg0.push_back( msg[ i ] );
+        }
+        if( msg[ i ] == ' ' )
+            cambioClave = true;
     }
 
-    for( int i = 0; i < vectorBloques.size(); i++ ){//Convertir a ZZ
+    cout<<"msg: "<<msg0<<endl;
+    cout<<"firm: "<<firm<<endl;
+
+    ZZ ePublico;
+    ZZ NPublico;
+    cout << "Ingrese la clave pública e de su remitente: ";
+    cin >> ePublico;
+    cout<<"e ingresado\n";
+    cout << "\nIngrese la clave pública N de su remitente: ";
+    cin >> NPublico;
+    cout<<"N ingresado\n";
+    cout << endl;
+    //D
+    vector< string > vectorBloques = dividirBloques( N, msg0, msg0.size() / hallarDigitos( N ), hallarDigitos( N ) );
+    for( int i = 0; i < vectorBloques.size(); i++ ){//Bloque por bloque...
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
         ZZ valorDescifrado ( TRC( valorConvertido, d, p, q ) );//Teorema del Resto Chino
 
@@ -153,31 +176,78 @@ string RSA::descifrar( string &msg ) {
         valoresNuevos << valorDescifrado;
         vectorBloques[ i ] = valoresNuevos.str();//Reemplazar en vector
     }
-
-    key = 0;
     string msg2;
-    for( int i = 0; i < vectorBloques.size(); i++ ){//Pasar valores del vector a un string
+    for( int i = 0; i < vectorBloques.size(); i++ )//Resultado numérico.
         msg2 += vectorBloques[ i ];
+    cout<<"termino D\n";
+    //Dr
+    vector< string > vectorBloques2 = dividirBloques( N, firm, firm.size() / hallarDigitos( N ), hallarDigitos( N ) );
+    for( int i = 0; i < vectorBloques2.size(); i++ ){//Bloque por bloque...
+        ZZ valorConvertido ( string_a_ZZ( vectorBloques2[ i ] ) );
+        ZZ valorDescifrado ( TRC( valorConvertido, d, p, q ) );//Teorema del Resto Chino
+
+        ostringstream valoresNuevos;
+         for( int j = 0; j < ( hallarDigitos( N ) - 1 - hallarDigitos( valorDescifrado ) ); j++ )//Regresar a string añaidendo 0s a la izq
+            valoresNuevos << "0";
+        valoresNuevos << valorDescifrado;
+        vectorBloques2[ i ] = valoresNuevos.str();//Reemplazar en vector
     }
-    vectorBloques.clear();//Limpiar vector
-    int numeroCifras = hallarDigitos( ZZ( alfabeto.size() - 1 ) );
-    for( int i = 0; i < ( msg.size() / numeroCifras ); i++ ) {//Crea espacios vacíos.
-        vectorBloques.push_back("");
+    string Dr;
+    for( int i = 0; i < vectorBloques2.size(); i++ )//Resultado numérico.
+        Dr += vectorBloques2[ i ];
+    cout<<"termino Dr\n";
+    //Df
+    vector< string > vectorBloques3 = dividirBloques( NPublico, Dr, Dr.size() / hallarDigitos( NPublico ), hallarDigitos( NPublico ) );
+    cout << "dividio bloques\n";
+    for( int i = 0; i < vectorBloques3.size(); i++ ){//Bloque por bloque...
+        ZZ valorConvertido ( string_a_ZZ( vectorBloques3[ i ] ) );
+        //ZZ valorDescifrado ( TRC( valorConvertido, d, p, q ) );//Teorema del Resto Chino
+        ZZ valorDescifrado ( Binary_Exponentiation( valorConvertido, ePublico, NPublico ) );
+        cout << "exponencio el valor "<<i<<endl;
+        ostringstream valoresNuevos;
+         for( int j = 0; j < ( hallarDigitos( NPublico ) - 1 - hallarDigitos( valorDescifrado ) ); j++ )//Regresar a string añaidendo 0s a la izq
+            valoresNuevos << "0";
+        valoresNuevos << valorDescifrado;
+        vectorBloques3[ i ] = valoresNuevos.str();//Reemplazar en vector
     }
-    for( int i = 0; i < msg2.size(); i++ ) {//Rellenar los espacios
-        vectorBloques[ key ].push_back( msg2[ i ] );
-        if( mod( ZZ( i + 1 ), ZZ( numeroCifras ) ) == 0) key++;
-    }
+    string Df;
+    for( int i = 0; i < vectorBloques3.size(); i++ )//Resultado numérico.
+        Df += vectorBloques3[ i ];
+    cout<<"termino Df\n";
+    //Convertir a letras.
+    vectorBloques.clear();
+    int numeroBloques = msg0.size() / hallarDigitos( ZZ( alfabeto.size() - 1 ) );//Crear bloques de 2 (cifra significativa alfabeto)
+    vectorBloques = dividirBloques( N, msg2, numeroBloques, hallarDigitos( ZZ( alfabeto.size() - 1 ) ) );
+
     for( int i = 0; i < vectorBloques.size(); i++ ){//Eliminar espacios sobrantes.
         if( vectorBloques[ i ] == "" )
             vectorBloques[ i ] = "26";
     }
-    string resultado;
-    for( int i = 0; i < vectorBloques.size(); i++ ) {
+
+    string resultados;//Resultado en letras D.
+    for( int i = 0; i < vectorBloques.size(); i++ ) {//Intercambiar por letras del alfabeto.
         istringstream indiceAlfabeto ( vectorBloques[ i ] );
         int valorNumerico;
         indiceAlfabeto >> valorNumerico;
-        resultado.push_back( alfabeto[ valorNumerico ] );
+        resultados.push_back( alfabeto[ valorNumerico ] );
     }
-    return resultado;
+    cout<<"convirio D a letras\n";
+    resultados.push_back( ' \n ' );
+
+    vectorBloques.clear();
+    numeroBloques = Df.size() / hallarDigitos( ZZ( alfabeto.size() - 1 ) );//Crear bloques de 2 (cifra significativa alfabeto)
+    vectorBloques = dividirBloques( NPublico, Df, numeroBloques, hallarDigitos( ZZ( alfabeto.size() - 1 ) ) );
+
+    for( int i = 0; i < vectorBloques.size(); i++ ){//Eliminar espacios sobrantes.
+        if( vectorBloques[ i ] == "" )
+            vectorBloques[ i ] = "26";
+    }
+    for( int i = 0; i < vectorBloques.size(); i++ ) {//Intercambiar por letras del alfabeto.
+        istringstream indiceAlfabeto ( vectorBloques[ i ] );
+        int valorNumerico;
+        indiceAlfabeto >> valorNumerico;
+        resultados.push_back( alfabeto[ valorNumerico ] );
+    }
+    cout<<"convirio Df a letras\n";
+    return resultados;
 }
