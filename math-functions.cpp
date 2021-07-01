@@ -196,13 +196,18 @@ ZZ criba_eratostenes( int bits, ZZ limite ) {
         return valor;
     }
 }
-
+ZZ inversaFermat ( ZZ a, ZZ p ){
+    ZZ ia ( Binary_Exponentiation( a, p-2, p ) );
+    return ia;
+}
 ZZ TRC( ZZ base, ZZ exponente, ZZ p, ZZ q ) {//Teorema del resto chino
     ZZ P ( p * q );
     ZZ P1 ( q );
     ZZ P2 ( p );
-    ZZ q1 ( inversa_modularNTL( P1, p ) );
-    ZZ q2 ( inversa_modularNTL( P2, q ) );
+    /*ZZ q1 ( inversa_modularNTL( P1, p ) );
+    ZZ q2 ( inversa_modularNTL( P2, q ) );*/
+    ZZ q1 ( inversaFermat( P1, p ) );
+    ZZ q2 ( inversaFermat( P2, q ) );
     ZZ exponente1 ( mod( exponente,p - 1 ) );
     ZZ exponente2 ( mod( exponente,q - 1 ) );
     ZZ X ( mod( ( Binary_Exponentiation( base, exponente1, p ) * P1 * q1 ) + ( Binary_Exponentiation( base, exponente2, q ) * P2 * q2 ), P ) );
@@ -298,12 +303,9 @@ int hallarDigitos( ZZ n ) {
     }
     return counter;
 }
-vector< string > separarBloques( string &msg, string &alfabeto, ZZ N ){
-    unsigned int tamBloques = hallarDigitos( N ) - 1;
+string alfabetoANumeros ( string &msg, string &alfabeto, ZZ N ){
     int numCifras = hallarDigitos( ZZ( alfabeto.size() - 1 ) );
     string msg2;
-
-
     //Hallar números en el alfabeto.
     for( unsigned int i = 0; i < msg.size(); i++ ) {
         for( unsigned int j = 0; j < alfabeto.size(); j++ ) {
@@ -323,20 +325,26 @@ vector< string > separarBloques( string &msg, string &alfabeto, ZZ N ){
             }
         }
     }
+    return msg2;
+}
+vector< string > separarBloques( string &msg, ZZ N ){
+    unsigned int tamBloques = hallarDigitos( N ) - 1;
+
+
     //Dividir en bloques
     vector< string > vectorBloques;
     int numBloques;
-    if( mod( ZZ( msg2.size() ),ZZ( tamBloques ) ) == 0 ) {
-        numBloques = msg2.size() / tamBloques;
+    if( mod( ZZ( msg.size() ),ZZ( tamBloques ) ) == 0 ) {
+        numBloques = msg.size() / tamBloques;
     } else {
-        numBloques = ( msg2.size() / tamBloques ) + 1;
+        numBloques = ( msg.size() / tamBloques ) + 1;
     }
     for( int i = 0; i < numBloques; i++ )//Crea espacios vacíos.
         vectorBloques.push_back("");
 
     int key = 0;
-    for( unsigned int i = 0; i < msg2.size(); i++ ){//Rellenar los espacios
-        vectorBloques[ key ].push_back( msg2[ i ] );
+    for( unsigned int i = 0; i < msg.size(); i++ ){//Rellenar los espacios
+        vectorBloques[ key ].push_back( msg[ i ] );
         if( mod( ZZ( i + 1 ),ZZ( tamBloques ) ) == 0) key++;
     }
     if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
@@ -359,11 +367,15 @@ vector< string > separarBloques( string &msg, string &alfabeto, ZZ N ){
 }
 
 vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques ){
+        cout<< numBloques << ' ' << tamBloques << endl;
+        if (numBloques <= 0)numBloques++;
+         cout<< numBloques << ' ' << tamBloques << endl;
         vector< string > vectorBloques;
         for( int i = 0; i < numBloques; i++ ) {//Crear espacios para bloques N cifras.
             vectorBloques.push_back("");
         }
         int key = 0;
+        cout << "size: " << msg.size() << endl;
         for( int i = 0; i < msg.size(); i++ ) {//Rellenar los bloques
             vectorBloques[ key ].push_back( msg[ i ] );
             if( mod( ZZ( i + 1 ), ZZ( tamBloques ) ) == 0 ) key++;

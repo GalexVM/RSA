@@ -19,7 +19,7 @@
 
 
 RSA::RSA( int bits ){
-    firma = "Gabriel Alexander Valdivia Medina 201 10 47904 73127083 Dayevska Anabel Caceres Budiel 201 10 47457 73333523 Sergio Leandro Ramos Villena  201-10-47800 75974804 Roberto Juan Cayro Cuadros 201 10 47988 71508951";
+    firma = "Gabriel Alexander Valdivia Medina 201 10 47904 73127083 Dayevska Anabel Caceres Budiel 201 10 47457 73333523 Sergio Leandro Ramos Villena  201-10-47800 75974804 Roberto Juan Cayro Cuadros 201 10 47988 71508951 ";
     p = generarPrimoNTL( bits );
     cout<<". ";
     q = generarPrimoNTL( bits );
@@ -72,7 +72,9 @@ RSA::RSA( int bits, int a ) {
     cout << endl;
 
     //C
-    vector < string > vectorBloques ( separarBloques( msg, alfabeto, NPublico ) );
+    string msgConvertido =  alfabetoANumeros ( msg, alfabeto, NPublico );
+    vector < string > vectorBloques ( separarBloques( msgConvertido, NPublico ) );
+
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
@@ -91,7 +93,8 @@ RSA::RSA( int bits, int a ) {
         msgCifrado += vectorBloques[ i ];
     }
     //r
-    vectorBloques = separarBloques( firma, alfabeto, N );
+    string firmaConvertida =  alfabetoANumeros ( firma, alfabeto, N );
+    vectorBloques = separarBloques( firmaConvertida, N );
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
@@ -109,8 +112,10 @@ RSA::RSA( int bits, int a ) {
     for( int i = 0; i < vectorBloques.size(); i++ ) {//Convertir vector a string;
         firmaCifrada += vectorBloques[ i ];
     }
+    cout<<"firma cifrada: "<<firmaCifrada<<endl;
     //Cr
-    vectorBloques = separarBloques( firmaCifrada, alfabeto, NPublico );
+    vectorBloques = separarBloques( firmaCifrada, NPublico );
+    //vectorBloques = dividirBloques( NPublico, firmaCifrada, firmaCifrada.size(), hallarDigitos( NPublico ) - 1 );
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
@@ -128,6 +133,7 @@ RSA::RSA( int bits, int a ) {
     for( int i = 0; i < vectorBloques.size(); i++ ) {//Convertir vector a string;
         firmaFinal += vectorBloques[ i ];
     }
+    cout<<"firma final"<<firmaFinal<<endl;
     ofstream out( "cifrado.txt" );//Imprimir en txt.
         out << msgCifrado << endl << firmaFinal << endl;
     out.close();
@@ -146,13 +152,14 @@ string RSA::descifrar( string &msg ) {
         if( cambioClave == true ){
             firm.push_back( msg[ i ] );
         }else{
-            msg0.push_back( msg[ i ] );
+            if( msg[ i ] != ' ')
+                msg0.push_back( msg[ i ] );
         }
         if( msg[ i ] == ' ' )
             cambioClave = true;
     }
 
-    cout<<"msg: "<<msg0<<endl;
+    cout<<"msg: "<<'|'<<msg0<<'|'<<endl;
     cout<<"firm: "<<firm<<endl;
 
     ZZ ePublico;
@@ -166,6 +173,10 @@ string RSA::descifrar( string &msg ) {
     cout << endl;
     //D
     vector< string > vectorBloques = dividirBloques( N, msg0, msg0.size() / hallarDigitos( N ), hallarDigitos( N ) );
+    for( int i = 0; i < vectorBloques.size(); i++ )
+        cout << vectorBloques[ i ] << ',';
+    cout<<endl;
+
     for( int i = 0; i < vectorBloques.size(); i++ ){//Bloque por bloque...
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
         ZZ valorDescifrado ( TRC( valorConvertido, d, p, q ) );//Teorema del Resto Chino
@@ -180,6 +191,7 @@ string RSA::descifrar( string &msg ) {
     for( int i = 0; i < vectorBloques.size(); i++ )//Resultado numérico.
         msg2 += vectorBloques[ i ];
     cout<<"termino D\n";
+    cout<<msg2<<endl;
     //Dr
     vector< string > vectorBloques2 = dividirBloques( N, firm, firm.size() / hallarDigitos( N ), hallarDigitos( N ) );
     for( int i = 0; i < vectorBloques2.size(); i++ ){//Bloque por bloque...
@@ -193,9 +205,11 @@ string RSA::descifrar( string &msg ) {
         vectorBloques2[ i ] = valoresNuevos.str();//Reemplazar en vector
     }
     string Dr;
+
     for( int i = 0; i < vectorBloques2.size(); i++ )//Resultado numérico.
         Dr += vectorBloques2[ i ];
     cout<<"termino Dr\n";
+    cout<<Dr<<endl;
     //Df
     vector< string > vectorBloques3 = dividirBloques( NPublico, Dr, Dr.size() / hallarDigitos( NPublico ), hallarDigitos( NPublico ) );
     cout << "dividio bloques\n";
@@ -214,6 +228,7 @@ string RSA::descifrar( string &msg ) {
     for( int i = 0; i < vectorBloques3.size(); i++ )//Resultado numérico.
         Df += vectorBloques3[ i ];
     cout<<"termino Df\n";
+    cout<<Df<<endl;
     //Convertir a letras.
     vectorBloques.clear();
     int numeroBloques = msg0.size() / hallarDigitos( ZZ( alfabeto.size() - 1 ) );//Crear bloques de 2 (cifra significativa alfabeto)

@@ -10,7 +10,7 @@
 	<NTL/ZZ.h>
 	<vector>
 
-1624929967 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
+1625092801 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
 	<iostream>
 	<NTL/ZZ.h>
 	<ctime>
@@ -21,11 +21,11 @@
 	<sstream>
 	<bitset>
 
-1624929898 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.h
+1625092631 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.h
 	<NTL/ZZ.h>
 	<string>
 
-1625012406 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
+1625100275 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
 	<iostream>
 	<fstream>
 	<string>

@@ -27,7 +27,8 @@ ZZ middleSquareNumberRan( ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor );//
 int hallarDigitos( ZZ n );
 ZZ min_( ZZ a, ZZ b );
 ZZ rem( ZZ c, ZZ d );
-vector< string > separarBloques( string &msg, string &alfabeto, ZZ N );
+string alfabetoANumeros ( string &msg, string &alfabeto, ZZ N );
+vector< string > separarBloques( string &msg, ZZ N );
 vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques );
 
 //Criba
