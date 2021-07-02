@@ -43,7 +43,7 @@ ZZ Binary_Exponentiation( ZZ a, ZZ e, ZZ n ) {
     return result;
 }
 
-ZZ resto_menor( ZZ a, ZZ b ){
+ZZ resto_menor( ZZ a, ZZ b ){//Euclides.
     ZZ c, d, r;
     if ( a == 0 )
         c = b;
@@ -236,7 +236,7 @@ ZZ rem( ZZ c, ZZ d ) {//Ayuda al menor resto.
     return r3;
 }
 
-ZZ newTime(){
+ZZ newTime(){//Genera semillas de tiempo.
     ZZ x;
     auto millisec_since_epoch = duration_cast< milliseconds >( system_clock::now().time_since_epoch() ).count();
     x = ZZ( millisec_since_epoch );
@@ -268,7 +268,7 @@ ZZ pot( ZZ base, ZZ exponente ) {
     return x * x * base;
 }
 
-vector< ZZ >fact_2( ZZ n ) {
+vector< ZZ >fact_2( ZZ n ) {//Saca la cantidad de factores 2 de un núemro. Miller Rabin.
     vector< ZZ > facts;
     ZZ a ( 0 );
     while( mod( n, ZZ( 2 ) ) == 0 ) {
@@ -279,7 +279,8 @@ vector< ZZ >fact_2( ZZ n ) {
     facts.push_back( n );
     return facts;
 }
-ZZ middleSquareNumberRan( ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor) {
+
+ZZ middleSquareNumberRan( ZZ number, ZZ intervalo_mayor, ZZ intervalo_menor) {//nros aleatorios con un rango de input.
    ZZ sqn = number * number, next_number = number;
    while( next_number < intervalo_mayor ) {
      int tam0  = ZZ_a_string( next_number ).length();
@@ -305,7 +306,7 @@ int hallarDigitos( ZZ n ) {
     }
     return counter;
 }
-string alfabetoANumeros ( string msg, string &alfabeto, ZZ N ){
+string alfabetoANumeros ( string msg, string &alfabeto, ZZ N ){//Convierte un string a números del alfabeto. Cifrado.
     int numCifras = hallarDigitos( ZZ( alfabeto.size() - 1 ) );
     string msg2;
     //Hallar números en el alfabeto.
@@ -329,9 +330,8 @@ string alfabetoANumeros ( string msg, string &alfabeto, ZZ N ){
     }
     return msg2;
 }
-vector< string > separarBloques( string &msg, int Size, ZZ N ){
+vector< string > separarBloques( string &msg, int Size, ZZ N ){ //Separar y rellenar bloques. Cifrado
     unsigned int tamBloques = Size - 1;
-
 
     //Dividir en bloques
     vector< string > vectorBloques;
@@ -367,12 +367,10 @@ vector< string > separarBloques( string &msg, int Size, ZZ N ){
             }
         }
 
-
-
     return vectorBloques;
 }
 
-vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques ){
+vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques ){//Dividir bloques. Descifrado.
 
 
         if( mod( ZZ( msg.size() ),ZZ( tamBloques ) ) == 0 ) {
@@ -382,8 +380,6 @@ vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBl
         }
 
         if (numBloques <= 0)numBloques++;
-        cout<<"numBLoques: "<<numBloques<<endl;
-        cout<<"tamBloques: "<<tamBloques<<endl;
 
         vector< string > vectorBloques;
         for( int i = 0; i < numBloques; i++ ) //Crear espacios para bloques N cifras.

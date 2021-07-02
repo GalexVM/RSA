@@ -4,7 +4,6 @@ using NTL::conv;
 #include <string>
 using std::string;
 
-
 //Principales
 ZZ mod( ZZ a, ZZ b );
 ZZ Binary_Exponentiation( ZZ a, ZZ e, ZZ n );//exponenciación.

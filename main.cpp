@@ -7,10 +7,6 @@
     using std::getline;
 #include <cstdlib>
     using std::ios;
-
-#include <NTL/ZZ.h>
-    using NTL::ZZ;
-    using NTL::conv;
 #include <fstream>
     using std::ifstream;
 #include "RSA.h"
@@ -21,7 +17,6 @@ int main(){
     RSA receptor( 1024, 0 );
     RSA emisor( 1024 );
     bool finSesion = false;
-    //vector < string > res;
     cout << "Algoritmo RSA" << endl;
     cout << "Sus claves se han generado en el directorio local\n";
 
@@ -44,7 +39,7 @@ int main(){
 
             break;
         case 'd':
-                cout << "Leyendo mensaje cifrado...";
+                cout << "Leyendo mensaje cifrado guardado...\n";
                 msgDescifrado = lectura();
                 cout << receptor.descifrar( msgDescifrado ) << endl;
             break;

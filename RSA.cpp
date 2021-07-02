@@ -32,9 +32,9 @@ RSA::RSA( int bits ){
         cout<<".\n";
     d = mod( inversa_modularNTL( e, oN ),oN );
 
-    ostringstream salida;
-    salida <<e<<"\t"<<N<<"\t"<<endl;//Crear cadena con datos.
-    ofstream out("claves_emisor.txt");//Imprimir en txt
+    ostringstream salida;//Enviar claves al txt "claves_emisor"
+    salida <<e<<"\t"<<N<<"\t"<<endl;
+    ofstream out("claves_emisor.txt");
         out<<salida.str()<<endl;
     out.close();
 }
@@ -52,9 +52,9 @@ RSA::RSA( int bits, int a ) {
         cout<<".\n";
     d = mod( inversa_modularNTL( e, oN ),oN );
 
-    ostringstream salida;
-    salida <<e<<"\t"<<N<<"\t"<<endl;//Crear cadena con datos.
-    ofstream out("claves_receptor.txt");//Imprimir en txt
+    ostringstream salida;//Enviar claves al txt "claves_receptor"
+    salida <<e<<"\t"<<N<<"\t"<<endl;
+    ofstream out("claves_receptor.txt");
         out<<salida.str()<<endl;
     out.close();
 }
@@ -68,19 +68,18 @@ RSA::RSA( int bits, int a ) {
     cin >> NPublico;
     cout << endl;
 
-    auto start = std::chrono::high_resolution_clock::now();
-
-    //Cifrar mensaje
+    //Cifrar mensaje.
     string msgConvertido =  alfabetoANumeros ( msg, alfabeto, NPublico );
-    vector < string > vectorBloques ( separarBloques( msgConvertido, hallarDigitos(N), NPublico) );
+
+    vector < string > vectorBloques ( separarBloques( msgConvertido, hallarDigitos(NPublico), NPublico) );
 
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
-        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, ePublico, NPublico ), NPublico ) );//Volver a convertir a string
+        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, ePublico, NPublico ), NPublico ) );//Exponenciar bloque por bloque.
 
         ostringstream nuevoValor;
-        for( int j = 0; j < ( hallarDigitos( NPublico ) - hallarDigitos( valorCifrado ) ); j++ )
+        for( int j = 0; j < ( hallarDigitos( NPublico ) - hallarDigitos( valorCifrado ) ); j++ )//Añadir 0 a la izq de ser necesario.
             nuevoValor<<"0";
         nuevoValor<<valorCifrado;
 
@@ -91,16 +90,19 @@ RSA::RSA( int bits, int a ) {
     for( int i = 0; i < vectorBloques.size(); i++ ) {//Convertir vector a string;
         msgCifrado += vectorBloques[ i ];
     }
-    //r
+
+    //Primer cifrado firma.
     string firmaConvertida =  alfabetoANumeros ( firma, alfabeto, N );
+
     vectorBloques = separarBloques( firmaConvertida, hallarDigitos(N), N );
+
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
-        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, d, N ), N ) );//Volver a convertir a string
+        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, d, N ), N ) );//Exponenciar bloque por bloque.
 
         ostringstream nuevoValor;
-        for( int j = 0; j < ( hallarDigitos( N ) - hallarDigitos( valorCifrado ) ); j++ )
+        for( int j = 0; j < ( hallarDigitos( N ) - hallarDigitos( valorCifrado ) ); j++ )//Añadir 0 a la izq de ser necesario.
             nuevoValor<<"0";
         nuevoValor<<valorCifrado;
 
@@ -112,17 +114,16 @@ RSA::RSA( int bits, int a ) {
         firmaCifrada += vectorBloques[ i ];
     }
 
-
-    //Cr
-    vectorBloques = separarBloques( firmaCifrada, hallarDigitos(N), NPublico );
+    //Segundo cifrado firma
+    vectorBloques = separarBloques( firmaCifrada, hallarDigitos(NPublico), NPublico );
 
     for( int i = 0; i < vectorBloques.size(); i++ ) {
         ZZ valorConvertido ( string_a_ZZ( vectorBloques[ i ] ) );
 
-        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, ePublico, NPublico ), NPublico ) );//Volver a convertir a string
+        ZZ valorCifrado( mod( Binary_Exponentiation( valorConvertido, ePublico, NPublico ), NPublico ) );//Cifrar bloque por bloque.
 
         ostringstream nuevoValor;
-        for( int j = 0; j < ( hallarDigitos( NPublico ) - hallarDigitos( valorCifrado ) ); j++ )
+        for( int j = 0; j < ( hallarDigitos( NPublico ) - hallarDigitos( valorCifrado ) ); j++ )//Agregar 0 a la izq de ser necesario.
             nuevoValor<<"0";
         nuevoValor<<valorCifrado;
 
@@ -134,19 +135,13 @@ RSA::RSA( int bits, int a ) {
         firmaFinal += vectorBloques[ i ];
     }
 
-    ofstream out( "cifrado.txt" );//Imprimir en txt.
-        out << msgCifrado << "-" << firmaFinal << endl;
+    ofstream out( "cifrado.txt" );
+        out << msgCifrado << "-" << firmaFinal << endl;//Enviar ambos cifrados al txt "cifrado".
     out.close();
 
     string resultado;
-    resultado = msgCifrado + " " + firmaFinal;
-    //vector < string > resultado = { msgCifrado, firmaFinal };
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> float_ms = end - start;
-    auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::chrono::duration<long, std::micro> int_usec = int_ms;
-    cout << "generateNumbers() elapsed time is " << float_ms.count() << " ms "
-              << "( " << int_ms.count() << " milliseconds )" << endl;
+    resultado = msgCifrado + " " + firmaFinal;//Crear string resultado.
+
     return resultado;
 
 }
@@ -155,7 +150,7 @@ string RSA::descifrar( string &msg ) {
     string firm;
     string msg0;
     bool cambioClave = false;
-    for( unsigned int i = 0; i < msg.size(); i++ ){
+    for( unsigned int i = 0; i < msg.size(); i++ ){//Dividir string en mensaje y firma.
         if( cambioClave == true ){
             firm.push_back( msg[ i ] );
         }else{
@@ -166,21 +161,16 @@ string RSA::descifrar( string &msg ) {
             cambioClave = true;
     }
 
-    cout<<"msg: "<<'|'<<msg0<<'|'<<endl;
-    cout<<"firm: "<<firm<<endl;
-
+    //Recibir clave pública del emisor.
     ZZ ePublico;
     ZZ NPublico;
     cout << "Ingrese la clave pública e de su remitente: ";
     cin >> ePublico;
-    cout<<"e ingresado\n";
     cout << "\nIngrese la clave pública N de su remitente: ";
     cin >> NPublico;
-    cout<<"N ingresado\n";
     cout << endl;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    //D
+    //Descifrar mensaje.
     vector< string > vectorBloques = dividirBloques( N, msg0, msg0.size() / hallarDigitos( N ), hallarDigitos( N ) );
 
     for( int i = 0; i < vectorBloques.size(); i++ ){//Bloque por bloque...
@@ -197,7 +187,7 @@ string RSA::descifrar( string &msg ) {
     for( int i = 0; i < vectorBloques.size(); i++ )//Resultado numérico.
         msg2 += vectorBloques[ i ];
 
-    //Dr
+    //Primer descifrado firma.
     vector< string > vectorBloques2 = dividirBloques( N, firm, firm.size() / hallarDigitos( N ), hallarDigitos( N ) );
 
     for( int i = 0; i < vectorBloques2.size(); i++ ){//Bloque por bloque...
@@ -215,8 +205,8 @@ string RSA::descifrar( string &msg ) {
     for( int i = 0; i < vectorBloques2.size(); i++ )//Resultado numérico.
         Dr += vectorBloques2[ i ];
 
+    //Segundo descifrado de firma
     vector< string > vectorBloques3 = dividirBloques( NPublico, Dr, Dr.size() / (hallarDigitos( NPublico )), hallarDigitos( NPublico ) );
-
 
     for( int i = 0; i < vectorBloques3.size(); i++ ){//Bloque por bloque...
         ZZ valorConvertido ( string_a_ZZ( vectorBloques3[ i ] ) );
@@ -229,25 +219,22 @@ string RSA::descifrar( string &msg ) {
         valoresNuevos << valorDescifrado;
         vectorBloques3[ i ] = valoresNuevos.str();//Reemplazar en vector
     }
-
-
     string Df;
     for( int i = 0; i < vectorBloques3.size(); i++ )//Resultado numérico.
         Df += vectorBloques3[ i ];
+
 
     //Convertir a letras.
     vectorBloques.clear();
     int numeroBloques = msg0.size() / hallarDigitos( ZZ( alfabeto.size() - 1 ) );//Crear bloques de 2 (cifra significativa alfabeto)
     vectorBloques = dividirBloques( N, msg2, numeroBloques, hallarDigitos( ZZ( alfabeto.size() - 1 ) ) );
 
-
-
     for( int i = 0; i < vectorBloques.size(); i++ ){//Eliminar espacios sobrantes.
         if( vectorBloques[ i ] == "" )
             vectorBloques[ i ] = "26";
     }
 
-    string resultados;//Resultado en letras D.
+    string resultados;//Resultado en letras del mensaje.
     for( int i = 0; i < vectorBloques.size(); i++ ) {//Intercambiar por letras del alfabeto.
         istringstream indiceAlfabeto ( vectorBloques[ i ] );
         int valorNumerico;
@@ -261,7 +248,6 @@ string RSA::descifrar( string &msg ) {
     numeroBloques = Df.size() / hallarDigitos( ZZ( alfabeto.size() - 1 ) );//Crear bloques de 2 (cifra significativa alfabeto)
     vectorBloques = dividirBloques( NPublico, Df, numeroBloques, hallarDigitos( ZZ( alfabeto.size() - 1 ) ) );
 
-
     for( int i = 0; i < vectorBloques.size(); i++ ){//Eliminar espacios sobrantes.
         if( vectorBloques[ i ] == "" )
             vectorBloques[ i ] = "26";
@@ -270,16 +256,9 @@ string RSA::descifrar( string &msg ) {
         istringstream indiceAlfabeto ( vectorBloques[ i ] );
         int valorNumerico;
         indiceAlfabeto >> valorNumerico;
-        resultados.push_back( alfabeto[ valorNumerico ] );
+        resultados.push_back( alfabeto[ valorNumerico ] );//Resultado en letras de la firma.
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> float_ms = end - start;
-    auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::chrono::duration<long, std::micro> int_usec = int_ms;
-    cout << "generateNumbers() elapsed time is " << float_ms.count() << " ms "
-              << "( " << int_ms.count() << " milliseconds )" << endl;
     return resultados;
-
 
 }
