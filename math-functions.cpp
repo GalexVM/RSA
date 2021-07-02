@@ -146,10 +146,10 @@ ZZ generarPrimoNTL( int bits ) {
         auto end = std::chrono::high_resolution_clock::now();
         auto elapsed = std::chrono::duration_cast <std::chrono::nanoseconds> ( end - begin );
         int seg = elapsed.count()*1e-9;
-        //cout<<seg<<endl;
+
         if( seg > 99 && bits >= 2048) {
-            cout << "\nTiempo de espera agotado, generando números con método alternativo... \n" << seg << endl;
-            numero = criba_eratostenes( bits, ZZ( 1 ) );
+            cout << "\nTiempo de espera agotado, generando números con método alternativo... \n" << endl;
+            numero = criba_eratostenes(bits,ZZ(1));
             break;
         }
     }
@@ -168,31 +168,33 @@ ZZ generarCoprimoNTL( ZZ n, int bits ) {
     return coprimo;
 }
 
-ZZ criba_eratostenes( int bits, ZZ limite ) {
-    ZZ pot = NTL::power2_ZZ( bits );
-    ZZ max = pot - 1;
-    nodo *h = new nodo ( ZZ( 0 ), ZZ( 0 ) );
-    nodo *t = h;
-    if( limite != ZZ( 0 ) ) {
+ZZ criba_eratostenes(int bits,ZZ limite){
+    ZZ pot=NTL::power2_ZZ(bits);
+    ZZ max= pot-1;
+    nodo *h= new nodo (ZZ(0), ZZ(0));
+    nodo *t= h;
+    if(limite != 0)
+    {
         int contador = 0;
-        for ( ZZ min = pot / 2; ZZ( contador ) < limite; min++ ) {
-            if ( MillerRabinTest( conv <ZZ> ( min ), ZZ( 10 ) ) ) {
+        for ( ZZ min=pot/2 ;contador< limite; min++){
+            if ( MillerRabinTest(conv<ZZ>(min),ZZ(10))){
                 contador++;
-                t -> next = new nodo( ( t -> key ) + 1, min );
-                t = t -> next;
+                t->next = new nodo( (t->key)+1, min);
+                t= t->next;
             }
         }
-        ZZ valor = t -> val;
+        ZZ valor = t->val;
         return valor;
     }
-    else {
-        for ( ZZ min = pot / 2; min <= max; min++ ) {
-            if ( MillerRabinTest( conv <ZZ>( min ),ZZ( 10 ) ) ) {
-                t -> next = new nodo( ( t -> key ) + 1, min );
-                t= t -> next;
+    else
+    {
+        for ( ZZ min=pot/2 ;min<= max; min++){
+            if ( MillerRabinTest(conv<ZZ>(min),ZZ(10))){
+                t->next = new nodo( (t->key)+1, min);
+                t= t->next;
             }
         }
-        ZZ valor = t -> val;
+        ZZ valor = t->val;
         return valor;
     }
 }
@@ -303,7 +305,7 @@ int hallarDigitos( ZZ n ) {
     }
     return counter;
 }
-string alfabetoANumeros ( string &msg, string &alfabeto, ZZ N ){
+string alfabetoANumeros ( string msg, string &alfabeto, ZZ N ){
     int numCifras = hallarDigitos( ZZ( alfabeto.size() - 1 ) );
     string msg2;
     //Hallar números en el alfabeto.
@@ -327,8 +329,8 @@ string alfabetoANumeros ( string &msg, string &alfabeto, ZZ N ){
     }
     return msg2;
 }
-vector< string > separarBloques( string &msg, ZZ N ){
-    unsigned int tamBloques = hallarDigitos( N ) - 1;
+vector< string > separarBloques( string &msg, int Size, ZZ N ){
+    unsigned int tamBloques = Size - 1;
 
 
     //Dividir en bloques
@@ -347,38 +349,69 @@ vector< string > separarBloques( string &msg, ZZ N ){
         vectorBloques[ key ].push_back( msg[ i ] );
         if( mod( ZZ( i + 1 ),ZZ( tamBloques ) ) == 0) key++;
     }
-    if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
-        if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
-            while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
-                vectorBloques.back() += "26";
-            }
-        } else {
-            while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
-                vectorBloques.back() += "26";
-            }
-            vectorBloques.back().push_back( '2' );
-            vectorBloques.push_back( "6" );
-            while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
-                vectorBloques.back() += "26";
+
+        if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
+            if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
+                while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
+                    vectorBloques.back() += "26";
+                }
+            } else {
+                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
+                    vectorBloques.back() += "26";
+                }
+                vectorBloques.back().push_back( '2' );
+                vectorBloques.push_back( "6" );
+                while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
+                    vectorBloques.back() += "26";
+                }
             }
         }
-    }
+
+
+
     return vectorBloques;
 }
 
 vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBloques ){
-        cout<< numBloques << ' ' << tamBloques << endl;
-        if (numBloques <= 0)numBloques++;
-         cout<< numBloques << ' ' << tamBloques << endl;
-        vector< string > vectorBloques;
-        for( int i = 0; i < numBloques; i++ ) {//Crear espacios para bloques N cifras.
-            vectorBloques.push_back("");
+
+
+        if( mod( ZZ( msg.size() ),ZZ( tamBloques ) ) == 0 ) {
+            numBloques = msg.size() / tamBloques;
+        } else {
+            numBloques = ( msg.size() / tamBloques ) + 1;
         }
+
+        if (numBloques <= 0)numBloques++;
+        cout<<"numBLoques: "<<numBloques<<endl;
+        cout<<"tamBloques: "<<tamBloques<<endl;
+
+        vector< string > vectorBloques;
+        for( int i = 0; i < numBloques; i++ ) //Crear espacios para bloques N cifras.
+            vectorBloques.push_back("");
+
         int key = 0;
-        cout << "size: " << msg.size() << endl;
+
         for( int i = 0; i < msg.size(); i++ ) {//Rellenar los bloques
             vectorBloques[ key ].push_back( msg[ i ] );
             if( mod( ZZ( i + 1 ), ZZ( tamBloques ) ) == 0 ) key++;
+
+        }
+
+        if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
+            if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
+                while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
+                    vectorBloques.back() += "26";
+                }
+            } else {
+                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
+                    vectorBloques.back() += "26";
+                }
+                vectorBloques.back().push_back( '2' );
+                vectorBloques.push_back( "6" );
+                while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
+                    vectorBloques.back() += "26";
+                }
+            }
         }
 
         return vectorBloques;

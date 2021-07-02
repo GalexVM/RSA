@@ -5,14 +5,21 @@
 #include <string>
     using std::string;
     using std::getline;
+#include <cstdlib>
+    using std::ios;
+
 #include <NTL/ZZ.h>
     using NTL::ZZ;
     using NTL::conv;
+#include <fstream>
+    using std::ifstream;
 #include "RSA.h"
 
+string lectura();
+
 int main(){
-    RSA receptor( 64, 0 );
-    RSA emisor( 64 );
+    RSA receptor( 1024, 0 );
+    RSA emisor( 1024 );
     bool finSesion = false;
     //vector < string > res;
     cout << "Algoritmo RSA" << endl;
@@ -37,8 +44,8 @@ int main(){
 
             break;
         case 'd':
-                cout << "Ingrese el mensaje cifrado: ";
-                getline( cin, msgDescifrado );
+                cout << "Leyendo mensaje cifrado...";
+                msgDescifrado = lectura();
                 cout << receptor.descifrar( msgDescifrado ) << endl;
             break;
         case 's':
@@ -51,3 +58,17 @@ int main(){
     return 0;
 }
 
+string lectura(){
+    ifstream archivo;
+    string texto, resultado;
+    archivo.open("cifrado.txt",ios::in);
+    if(archivo.fail()){
+        cout<<"Error al abrir el archivo de texto cifrado\n";
+        exit(1);
+    }
+    while(!archivo.eof()){
+        getline(archivo,texto);
+        resultado += texto;
+    }
+    return resultado;
+}

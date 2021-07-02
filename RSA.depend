@@ -1,16 +1,18 @@
 # depslib dependency file v1.0
-1624817651 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\main.cpp
+1625193158 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\main.cpp
 	<iostream>
 	<string>
+	<cstdlib>
 	<NTL/ZZ.h>
+	<fstream>
 	"RSA.h"
 
-1624817545 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.h
+1625163188 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.h
 	<string>
 	<NTL/ZZ.h>
 	<vector>
 
-1625092801 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
+1625181557 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.cpp
 	<iostream>
 	<NTL/ZZ.h>
 	<ctime>
@@ -21,11 +23,11 @@
 	<sstream>
 	<bitset>
 
-1625092631 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.h
+1625180056 f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\math-functions.h
 	<NTL/ZZ.h>
 	<string>
 
-1625100275 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
+1625192255 source:f:\proyectos\proyectos_c++\algoritmos-cifrado\rsa\rsa.cpp
 	<iostream>
 	<fstream>
 	<string>

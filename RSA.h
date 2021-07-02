@@ -16,8 +16,6 @@ private:
     string firma;
     string alfabeto = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 public:
-    string nombre = "Gabriel Valdivia Medina";
-    string correo = "gabriel.valdivia.medina@ucsp.edu.pe";
     RSA( int bits, int a );
     RSA( int bits );
     string descifrar( string &msg );
