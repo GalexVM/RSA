@@ -14,7 +14,7 @@ private:
     ZZ p;
     ZZ q;
     string firma;
-    string alfabeto = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,.-( )abcdefghijklmnopqrstuvwxyz<>*1234567890[]";
 public:
     RSA( int bits, int a );
     RSA( int bits );

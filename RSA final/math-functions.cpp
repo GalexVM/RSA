@@ -353,16 +353,16 @@ vector< string > separarBloques( string &msg, int Size, ZZ N ){ //Separar y rell
         if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
             if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
                 while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
-                    vectorBloques.back() += "26";
+                    vectorBloques.back() += "30";
                 }
             } else {
-                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
-                    vectorBloques.back() += "26";
+                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "30" y al final "2".
+                    vectorBloques.back() += "30";
                 }
-                vectorBloques.back().push_back( '2' );
-                vectorBloques.push_back( "6" );
+                vectorBloques.back().push_back( '3' );
+                vectorBloques.push_back( "0" );
                 while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
-                    vectorBloques.back() += "26";
+                    vectorBloques.back() += "30";
                 }
             }
         }
@@ -396,16 +396,16 @@ vector < string > dividirBloques ( ZZ &N, string &msg, int numBloques, int tamBl
         if( vectorBloques.back().size() != tamBloques ) {//Comprobar si hay espacio sin rellenar.
             if ( mod( ZZ( tamBloques - vectorBloques.back().size() ), ZZ(2) ) == 0 ) {
                 while( vectorBloques.back().size() < tamBloques ) {//Si la diferencia es par no es necesario un nuevo bloque
-                    vectorBloques.back() += "26";
+                    vectorBloques.back() += "30";
                 }
             } else {
-                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "26" y al final "2".
-                    vectorBloques.back() += "26";
+                while( vectorBloques.back().size() < tamBloques - 1 ) {//Si la diferencia es impar agregar "30" y al final "2".
+                    vectorBloques.back() += "30";
                 }
-                vectorBloques.back().push_back( '2' );
-                vectorBloques.push_back( "6" );
+                vectorBloques.back().push_back( '3' );
+                vectorBloques.push_back( "0" );
                 while( vectorBloques.back().size() < tamBloques ) {//Rellenar nuevo bloque.
-                    vectorBloques.back() += "26";
+                    vectorBloques.back() += "30";
                 }
             }
         }

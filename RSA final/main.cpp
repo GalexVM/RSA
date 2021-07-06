@@ -11,7 +11,8 @@
     using std::ifstream;
 #include "RSA.h"
 
-string lectura();
+string lectura_cifrado();
+string lectura_mensaje();
 
 int main(){
     RSA receptor( 1024, 0 );
@@ -33,14 +34,15 @@ int main(){
 
         switch( key ){
         case 'c':
-                cout << "Ingrese el mensaje a cifrar: ";
-                getline( cin, msg );
+                cout << "Leyendo mensaje guardado...\n";
+                msg = lectura_mensaje();
+                //getline( cin, msg );
                 cout << emisor.cifrar( msg ) << endl;
 
             break;
         case 'd':
                 cout << "Leyendo mensaje cifrado guardado...\n";
-                msgDescifrado = lectura();
+                msgDescifrado = lectura_cifrado();
                 cout << receptor.descifrar( msgDescifrado ) << endl;
             break;
         case 's':
@@ -53,10 +55,25 @@ int main(){
     return 0;
 }
 
-string lectura(){
+string lectura_cifrado(){
     ifstream archivo;
     string texto, resultado;
     archivo.open("cifrado.txt",ios::in);
+    if(archivo.fail()){
+        cout<<"Error al abrir el archivo de texto cifrado\n";
+        exit(1);
+    }
+    while(!archivo.eof()){
+        getline(archivo,texto);
+        resultado += texto;
+    }
+    return resultado;
+}
+
+string lectura_mensaje(){
+    ifstream archivo;
+    string texto, resultado;
+    archivo.open("mensaje.txt",ios::in);
     if(archivo.fail()){
         cout<<"Error al abrir el archivo de texto cifrado\n";
         exit(1);
